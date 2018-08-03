@@ -234,7 +234,7 @@ class NotificationsController < ApplicationController
   end
 
   def notifications_for_presentation
-    eager_load_relation = Octobox.config.fetch_subject ? {subject: :labels} : nil
+    eager_load_relation = fetch_subject? ? {subject: :labels} : nil
     scope = current_user.notifications.includes(eager_load_relation)
 
     if params[:starred].present?
@@ -279,5 +279,9 @@ class NotificationsController < ApplicationController
     per_page = 20 if per_page < 1
     raise ActiveRecord::RecordNotFound if per_page > 100
     per_page
+  end
+
+  def fetch_subject?
+    Octobox.config.fetch_subject || (Octobox.config.octobox_io && current_user.admin?)
   end
 end

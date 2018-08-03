@@ -211,6 +211,6 @@ module NotificationsHelper
   end
 
   def display_subject?
-    Octobox.config.fetch_subject
+    Octobox.config.fetch_subject || (Octobox.config.octobox_io && current_user.admin?)
   end
 end

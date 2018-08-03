@@ -57,7 +57,7 @@ class Notification < ApplicationRecord
   end
 
   def state
-    return unless Octobox.config.fetch_subject
+    return unless fetch_subject?
     subject.try(:state)
   end
 
@@ -95,7 +95,7 @@ class Notification < ApplicationRecord
   end
 
   def expanded_subject_url
-    return subject_url unless Octobox.config.fetch_subject
+    return subject_url unless fetch_subject?
     subject.try(:html_url) || subject_url # Use the sync'd HTML URL if possible, else the API one
   end
 
@@ -141,8 +141,12 @@ class Notification < ApplicationRecord
     nil
   end
 
+  def fetch_subject?
+    Octobox.config.fetch_subject || (Octobox.config.octobox_io && user.admin?)
+  end
+
   def update_subject
-    return unless Octobox.config.fetch_subject
+    return unless fetch_subject?
     # skip syncing if the notification was updated around the same time as subject
     return if subject != nil && updated_at - subject.updated_at < 2.seconds
 

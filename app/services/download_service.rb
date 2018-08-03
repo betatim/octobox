@@ -64,7 +64,7 @@ class DownloadService
 
   def process_notifications(notifications, unarchive: false)
     return if notifications.blank?
-    eager_load_relation = Octobox.config.fetch_subject ? :subject : nil
+    eager_load_relation = fetch_subject? ? :subject : nil
     existing_notifications = user.notifications.includes(eager_load_relation).where(github_id: notifications.map(&:id))
     notifications.reject{|n| !unarchive && n.unread }.each do |notification|
       n = existing_notifications.find{|en| en.github_id == notification.id.to_i}
@@ -82,5 +82,9 @@ class DownloadService
     headers = {cache_control: %w(no-store no-cache)}
     notifications = fetch_notifications(params: {all: true, headers: headers})
     process_notifications(notifications, unarchive: true)
+  end
+
+  def fetch_subject?
+    Octobox.config.fetch_subject || (Octobox.config.octobox_io && user.admin?)
   end
 end
