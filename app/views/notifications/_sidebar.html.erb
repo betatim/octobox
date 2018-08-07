@@ -29,8 +29,8 @@
 
   <%= menu_separator %>
 
-  <% @unread_notifications.each do |unread_notification, count| %>
-    <%= filter_link :unread, unread_notification, count do %>
+  <% [false, true].each do |unread_notification| %>
+    <%= filter_link :unread, unread_notification, @unread_notifications[unread_notification] || 0 do %>
       <% if unread_notification %>
         <%= octicon 'mail', height: 16, class: 'sidebar-icon star-active' %>
         Unread
