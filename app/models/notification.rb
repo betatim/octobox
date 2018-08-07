@@ -26,6 +26,7 @@ class Notification < ApplicationRecord
   scope :archived, -> { where(archived: true) }
   scope :newest,   -> { order('notifications.updated_at DESC') }
   scope :starred,  -> { where(starred: true) }
+  scope :triage,   -> { state('open') }
 
   scope :repo,     ->(repo_name)    { where(repository_full_name: repo_name) }
   scope :type,     ->(subject_type) { where(subject_type: subject_type) }

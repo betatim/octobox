@@ -241,6 +241,8 @@ class NotificationsController < ApplicationController
       scope.starred
     elsif params[:archive].present?
       scope.archived
+    elsif params[:triage].present?
+      scope.triage
     else
       scope.inbox
     end

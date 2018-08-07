@@ -38,11 +38,12 @@ module NotificationsHelper
       q:        params[:q],
       state:    params[:state],
       label:    params[:label],
+      triage:   params[:triage]
     }
   end
 
   def inbox_selected?
-    !archive_selected? && !starred_selected?
+    !archive_selected? && !starred_selected? && !triage_selected?
   end
 
   def archive_selected?
@@ -53,12 +54,16 @@ module NotificationsHelper
     filters[:starred].present?
   end
 
+  def triage_selected?
+    filters[:triage].present?
+  end
+
   def notification_param_keys
     filters.keys - [:per_page]
   end
 
   def bucket_param_keys
-    [:archive, :starred]
+    [:archive, :starred, :triage]
   end
 
   def filter_param_keys
