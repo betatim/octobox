@@ -76,6 +76,7 @@ class NotificationsController < ApplicationController
     @unread_notifications  = scope.distinct.group(:unread).count
     @reasons               = scope.distinct.group(:reason).count
     @unread_repositories   = scope.distinct.group(:repository_full_name).count
+    @assigned              = scope.assigned(current_user.github_login).count
     scope = current_notifications(scope)
     check_out_of_bounds(scope)
 
@@ -227,6 +228,7 @@ class NotificationsController < ApplicationController
       end
       scope = scope.send(sub_scope, val)
     end
+    scope = scope.assigned(params[:assigned]) if params[:assigned].present?
     scope = scope.labels(params[:label]) if params[:label].present?
     scope = scope.search_by_subject_title(params[:q]) if params[:q].present?
     scope = scope.unscope(where: :archived)           if params[:q].present?

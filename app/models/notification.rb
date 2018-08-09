@@ -37,6 +37,9 @@ class Notification < ApplicationRecord
 
   scope :labels,    ->(label_name) { joins(:labels).where('labels.name = ?', label_name)}
 
+  scope :assigned,   ->(assignee) { joins(:subject).where("? = ANY(subjects.assignees)", assignee) }
+  scope :unassigned, -> { joins(:subject).where("subjects.assignees = '{}'") }
+
   scope :subjectable, -> { where(subject_type: ['Issue', 'PullRequest', 'Commit', 'Release']) }
   scope :without_subject, -> { includes(:subject).where(subjects: { url: nil }) }
 
@@ -163,7 +166,8 @@ class Notification < ApplicationRecord
           author: remote_subject.user.login,
           html_url: remote_subject.html_url,
           created_at: remote_subject.created_at,
-          updated_at: remote_subject.updated_at
+          updated_at: remote_subject.updated_at,
+          assignees: remote_subject.assignees.try(:map, &:login)
         })
       when 'Commit', 'Release'
         create_subject({
