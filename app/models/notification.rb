@@ -40,6 +40,8 @@ class Notification < ApplicationRecord
   scope :subjectable, -> { where(subject_type: ['Issue', 'PullRequest', 'Commit', 'Release']) }
   scope :without_subject, -> { includes(:subject).where(subjects: { url: nil }) }
 
+  scope :bot_author, -> { joins(:subject).where('subjects.author ILIKE ?', '%[bot]') }
+
   paginates_per 20
 
   class << self
